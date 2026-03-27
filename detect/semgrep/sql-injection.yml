@@ -1,0 +1,14 @@
+rules:
+  - id: flask-sqli-raw-query-construction
+    message: Possible SQL injection - SQL query appears to be built from string formatting/concatenation before execute().
+    severity: ERROR
+    languages: [python]
+    patterns:
+        - pattern: |
+            $Q = f"...{$X}..."
+            ...
+            $C.execute($Q)
+    metadata:
+      category: security
+      technology: [python, flask]
+      owasp: ["A03:2021 - Injection"]
