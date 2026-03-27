@@ -1,0 +1,38 @@
+# Name of this GitHub Actions workflow.
+name: Semgrep
+
+on:
+  # Scan changed files in PRs (diff-aware scanning):
+  pull_request: {}
+  # Scan on-demand through GitHub Actions interface:
+  workflow_dispatch: {}
+  # Scan mainline branches and report all findings:
+  push:
+    branches: ["master", "main"]
+
+jobs:
+  semgrep_scan:
+    # User definable name of this GitHub Actions job.
+    name: semgrep/ci
+    # If you are self-hosting, change the following `runs-on` value:
+    runs-on: ubuntu-latest
+    # Skip any PR created by dependabot to avoid permission issues:
+    if: (github.actor != 'dependabot[bot]')
+    permissions:
+      # required for all workflows
+      security-events: write
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+
+    steps:
+      # Fetch project source with GitHub Actions Checkout.
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Semgrep
+        run: |
+          pip install semgrep
+      - name: Run Semgrep Scan
+        run: |
+          semgrep --config detect/semgrep/sql-injection.yml .
