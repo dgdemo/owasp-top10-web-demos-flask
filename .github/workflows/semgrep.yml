@@ -35,4 +35,4 @@ jobs:
           pip install semgrep
       - name: Run Semgrep Scan
         run: |
-          semgrep --config detect/semgrep/sql-injection.yml .
+          semgrep --error --config detect/semgrep/sql-injection.yml .
