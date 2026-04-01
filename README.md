@@ -1,13 +1,23 @@
 # OWASP Top 10 Web Demos
 
-A collection of small, self-contained web application vulnerability demos focused on the **OWASP Top 10**.
+A collection of small, self-contained web application vulnerability demos focused on the **OWASP Top 10**, with integrated security checks in CI.
 
 Each vulnerability lives in its own folder and includes:
 
 - A vulnerable implementation
 - A fixed (secure) version
 - A walkthrough-style README explaining the issue and remediation
-- Detection via **Semgrep**, integrated into **GitHub Actions**
+
+## Security CI Pipeline
+
+This repository includes a GitHub Actions workflow that runs:
+
+- Semgrep for SAST
+- pip-audit for Python dependency scanning (SCA)
+
+Current behavior:
+- The workflow fails on the intentional SQL injection demo
+- The dependency scan passes when no known vulnerable packages are present
 
 ## Note
 The OWASP Top 10 is primarily an awareness document and just a starting point for web application security:
