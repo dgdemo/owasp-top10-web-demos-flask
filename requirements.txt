@@ -1,1 +1,2 @@
 semgrep
+pip_audit
