@@ -71,3 +71,26 @@ jobs:
       - name: Run pip-audit Scan
         run: |
           pip-audit -r requirements.txt
+  gitleaks_scan:
+    name: git-secrets/ci
+    runs-on: ubuntu-latest
+    if: (github.actor != 'dependabot[bot]')
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install git-secrets
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git-secrets
+
+      - name: Run git-secrets Scan
+        run: |
+          git secrets --scan -r .
+
+    

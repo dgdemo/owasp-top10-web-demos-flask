@@ -10,10 +10,18 @@ Each vulnerability lives in its own folder and includes:
 
 ## Security CI Pipeline
 
-This repository includes a GitHub Actions workflow that runs:
+This repository includes a GitHub Actions security workflow:
 
-- Semgrep for SAST
-- pip-audit for Python dependency scanning (SCA)
+Pipeline includes:
+- SAST (Semgrep)
+- SCA (pip-audit)
+- Secrets scanning (Gitleaks)
+
+Pipeline flow:
+- Code is pushed or a PR is opened
+- Security scans run automatically
+- The pipeline fails if issues are detected
+- Developers review findings and fix vulnerabilities before merge
 
 Current behavior:
 - The workflow fails on the intentional SQL injection demo
