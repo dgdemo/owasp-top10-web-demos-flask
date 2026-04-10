@@ -92,5 +92,57 @@ jobs:
       - name: Run git-secrets Scan
         run: |
           git secrets --scan -r .
+  dast-zap:
+    name: OWASP_ZAP/ci
+    runs-on: ubuntu-latest
+    # Skip any PR created by dependabot to avoid permission issues:
+    if: (github.actor != 'dependabot[bot]')
 
-    
+    steps:
+    # Fetch project source with GitHub Actions Checkout.
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Start Flask app
+      run: |
+        nohup python sql-flask/app.py > flask.log 2>&1 &
+        sleep 5
+
+    - name: Verify Flask app is running
+      run: |
+        curl -I http://127.0.0.1:5000 || exit 1
+        curl http://127.0.0.1:5000 | head
+
+    - name: Run OWASP ZAP Baseline Scan
+      run: |
+        docker run --network=host \
+          -v "${{ github.workspace }}:/zap/wrk/:rw" \
+          -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+          -t http://127.0.0.1:5000 \
+          -r zap-report.html \
+          -I
+
+    - name: Upload ZAP Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: zap-baseline-report
+        path: zap-report.html
+        retention-days: 7
+        
+    - name: Upload Flask log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: flask-runtime-log
+        path: flask.log
+        retention-days: 7

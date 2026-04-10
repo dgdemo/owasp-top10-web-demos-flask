@@ -6,3 +6,9 @@ __pycache__/
 .DS_Store
 .vscode/
 *.log
+zap.yaml
+
+# ZAP reports
+zap-report.html
+zap-report.json
+zap-report.xml

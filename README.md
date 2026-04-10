@@ -16,16 +16,19 @@ Pipeline includes:
 - SAST (Semgrep)
 - SCA (pip-audit)
 - Secrets scanning (Gitleaks)
+- DAST (OWASP ZAP baseline scan)
 
 Pipeline flow:
 - Code is pushed or a PR is opened
-- Security scans run automatically
-- The pipeline fails if issues are detected
+- Security scans run automatically, including static and dynamic analysis
+- The pipeline fails if issues are detected in configured blocking checks
 - Developers review findings and fix vulnerabilities before merge
+- DAST uploads an HTML report artifact for review
 
 Current behavior:
 - The workflow fails on the intentional SQL injection demo
 - The dependency scan passes when no known vulnerable packages are present
+- The ZAP baseline scan generates a report artifact showing runtime findings
 
 ## Note
 The OWASP Top 10 is primarily an awareness document and just a starting point for web application security:
