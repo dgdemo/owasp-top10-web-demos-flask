@@ -96,50 +96,50 @@ jobs:
     name: OWASP_ZAP/ci
     runs-on: ubuntu-latest
     if: (github.actor != 'dependabot[bot]')
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-    
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-        
+
       - name: Install dependencies
         working-directory: ./sql-flask
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-        
+
       - name: Start Flask app
         working-directory: ./sql-flask
         run: |
           nohup python app.py > flask.log 2>&1 &
           sleep 5
           cat flask.log
-        
+
       - name: Verify Flask app is running
         run: |
           curl -I http://127.0.0.1:5000
           curl http://127.0.0.1:5000 | head
-        
+
       - name: Run OWASP ZAP Baseline Scan
         run: |
-          docker run --network=host \
+          docker run --user root --network=host \
             -v "${{ github.workspace }}:/zap/wrk/:rw" \
             -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://127.0.0.1:5000 \
             -r zap-report.html \
             -I
-        
+
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         with:
           name: zap-baseline-report
           path: zap-report.html
           retention-days: 7
-        
+
       - name: Upload Flask log
         if: always()
         uses: actions/upload-artifact@v4
