@@ -1,3 +1,9 @@
+import sys
+from pathlib import Path
+# Add project root to Python path so pytest can import app.py
+# when tests are executed from the tests/ subfolder.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 import pytest
 from app import app
 
@@ -24,5 +30,7 @@ def test_fixed_endpoint_escapes_script_tag(client):
     html = resp.get_data(as_text=True)
 
     # Script tag should be escaped, not present literally
-    assert "<script>alert('XSS!')</script>" not in html
-    assert "&lt;script&gt;alert('XSS!')&lt;/script&gt;" in html
+    assert "<script>" not in html
+    assert "</script>" not in html
+    assert "&lt;script&gt;" in html
+    assert "&lt;/script&gt;" in html
