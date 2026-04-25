@@ -40,9 +40,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install semgrep
 
-      - name: Run Semgrep Scan
+      - name: Run Semgrep Scans
         run: |
           semgrep --error --config detect/semgrep/sql-injection.yml .
+          semgrep --error --config detect/semgrep/xss-rules.yml .
 
   pip_audit_scan:
     name: pip-audit/ci
